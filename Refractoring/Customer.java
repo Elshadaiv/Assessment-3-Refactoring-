@@ -9,18 +9,13 @@ public class Customer {
 	String customerID = "";
 	String password = "";
 	
-	ArrayList<CustomerAccount> accounts = new ArrayList<CustomerAccount> ();
+	private ArrayList<CustomerAccount> accounts;
+	
 
 	//Blank constructor
 	public Customer()
 	{
-		this.PPS = "";
-		this.surname = "";
-		this.firstName = "";
-		this.DOB = "";
-		this.customerID = "";
-		this.password = "";
-		this.accounts = null;
+		this.accounts = new ArrayList<>();
 	}
 	
 	//Constructor with details
@@ -32,7 +27,7 @@ public class Customer {
 		this.DOB = DOB;
 		this.customerID = customerID;
 		this.password = password;;
-		this.accounts = accounts;
+		this.accounts = (accounts == null) ? new ArrayList<>() : accounts;
 	}
 	
 	//Accessor methods
@@ -107,8 +102,8 @@ public class Customer {
 	
 	public void setAccounts(ArrayList<CustomerAccount> accounts)
 	{
-		this.accounts = accounts;
-	}
+        this.accounts = (accounts == null) ? new ArrayList<>() : accounts;
+    }
 	
 	public String toString()
 	{
