@@ -493,14 +493,8 @@ public class Menu extends JFrame{
 						}
 						else
 						{
-						
-					for(int i = 0; i < customer.getAccounts().size(); i++)
-				    {
-				    	if(customer.getAccounts().get(i).getNumber() == box.getSelectedItem() )
-				    	{
-				    		acc = customer.getAccounts().get(i);
-				    	}
-				    }
+					acc = getSelectedAccount(customer, box.getSelectedItem());
+						}
 										
 					continueButton.addActionListener(new ActionListener(  ) {
 						public void actionPerformed(ActionEvent ae) {
@@ -640,14 +634,8 @@ public class Menu extends JFrame{
 						}
 						else
 						{
-						
-					for(int i = 0; i < customer.getAccounts().size(); i++)
-				    {
-				    	if(customer.getAccounts().get(i).getNumber() == box.getSelectedItem() )
-				    	{
-				    		acc = customer.getAccounts().get(i);
-				    	}
-				    }
+							acc = getSelectedAccount(customer, box.getSelectedItem());
+						}
 										
 					continueButton.addActionListener(new ActionListener(  ) {
 						public void actionPerformed(ActionEvent ae) {
@@ -1313,13 +1301,7 @@ public class Menu extends JFrame{
 		
 	    
 	   
-	    for(int i = 0; i<e.getAccounts().size(); i++)
-	    {
-	    	if(e.getAccounts().get(i).getNumber() == box.getSelectedItem() )
-	    	{
-	    		acc = e.getAccounts().get(i);
-	    	}
-	    }
+	    acc = getSelectedAccount(e, box.getSelectedItem());
 	    
 	    
 	    
@@ -1448,20 +1430,7 @@ public class Menu extends JFrame{
 			    customer(e);
 			    return;
 			}
-			
-				String balanceTest = JOptionPane.showInputDialog(f, "Enter amount you wish to lodge:");//the isNumeric method tests to see if the string entered was numeric. 
-				if(isNumeric(balanceTest))
-				{
-					
-					balance = Double.parseDouble(balanceTest);
-					loop = false;
-					
-					
-				}
-				else
-				{
-					JOptionPane.showMessageDialog(f, "You must enter a numerical value!" ,"Oops!",  JOptionPane.INFORMATION_MESSAGE);
-				}
+			balance = promptForDouble("Enter amount you wish to lodge:");
 				
 			
 			String euro = "\u20ac";
@@ -1479,69 +1448,15 @@ public class Menu extends JFrame{
 		
 		withdrawButton.addActionListener(new ActionListener(  ) {
 			public void actionPerformed(ActionEvent ae) {
-				boolean loop = true;
-				boolean on = true;
 				double withdraw = 0;
-
-				if(acc instanceof CustomerCurrentAccount)
+				
+				if (!verifyPinIfRequired(acc)) 
 				{
-					int count = 3;
-					int checkPin = ((CustomerCurrentAccount) acc).getAtm().getPin();
-					loop = true;
-					
-					while(loop)
-					{
-						if(count == 0)
-						{
-							JOptionPane.showMessageDialog(f, "Pin entered incorrectly 3 times. ATM card locked."  ,"Pin",  JOptionPane.INFORMATION_MESSAGE);
-							((CustomerCurrentAccount) acc).getAtm().setValid(false);
-							customer(e); 
-							loop = false;
-							on = false;
-						}
-						
-						String Pin = JOptionPane.showInputDialog(f, "Enter 4 digit PIN;");
-						int i = Integer.parseInt(Pin);
-						
-					   if(on)
-					   {
-						if(checkPin == i)
-						{
-							loop = false;
-							JOptionPane.showMessageDialog(f, "Pin entry successful" ,  "Pin", JOptionPane.INFORMATION_MESSAGE);
-							
-						}
-						else
-						{
-							count --;
-							JOptionPane.showMessageDialog(f, "Incorrect pin. " + count + " attempts remaining."  ,"Pin",  JOptionPane.INFORMATION_MESSAGE);		
-						
-						}
-					
-					}
-					}
-		
-				    	
-				    	
-				    
-					
-					
-				}		if(on == true)
-						{
-					String balanceTest = JOptionPane.showInputDialog(f, "Enter amount you wish to withdraw (max 500):");//the isNumeric method tests to see if the string entered was numeric. 
-					if(isNumeric(balanceTest))
-					{
-						
-						withdraw = Double.parseDouble(balanceTest);
-						loop = false;
-						
-						
-						
-					}
-					else
-					{
-						JOptionPane.showMessageDialog(f, "You must enter a numerical value!" ,"Oops!",  JOptionPane.INFORMATION_MESSAGE);
-					}
+				    customer(e);
+				    return;
+				}
+			    
+					withdraw = promptForDouble("Enter amount you wish to withdraw (max 500):");
 					if(withdraw > 500)
 					{
 						JOptionPane.showMessageDialog(f, "500 is the maximum you can withdraw at a time." ,"Oops!",  JOptionPane.INFORMATION_MESSAGE);
@@ -1622,6 +1537,39 @@ public class Menu extends JFrame{
 	    account.getTransactionList().add(transaction);
 	}
 	
+	
+	private CustomerAccount getSelectedAccount(Customer customer, Object selectedNumber)
+	{
+	    if (customer == null || selectedNumber == null)
+	    {
+	        return null;
+	    }
+
+	    for (CustomerAccount a : customer.getAccounts())
+	    {
+	        if (a.getNumber().equals(selectedNumber.toString())) 
+	        {
+	            return a;
+	        }
+	    }
+	    return null;
+	}
+	
+	private double promptForDouble(String message)
+	{
+	    while(true)
+	    {
+	        String input = JOptionPane.showInputDialog(f, message);
+
+	        if(isNumeric(input))
+	        {
+	            return Double.parseDouble(input);
+	        }
+
+	        JOptionPane.showMessageDialog(f, "You must enter a numerical value!", JOptionPane.INFORMATION_MESSAGE);
+	    }
+	}
+	
 	public static boolean isNumeric(String str)  // a method that tests if a string is numeric
 	{  
 	  try  
@@ -1634,5 +1582,6 @@ public class Menu extends JFrame{
 	  }  
 	  return true;  
 	}
+	
 }
 
